@@ -423,7 +423,7 @@ static inline std::istream &operator >> (std::istream &is, XForm<T> &m)
 		for (int j = 0; j < 4; j++)
 			is >> m[i+4*j];
 	if (!is.good()) {
-		m = xform::identity();
+		m = XForm<T>::identity();
 		return is;
 	}
 
