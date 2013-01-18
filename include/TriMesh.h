@@ -203,7 +203,7 @@ public:
 		const point &p0 = vertices[faces[i][j]];
 		const point &p1 = vertices[faces[i][(j+1)%3]];
 		const point &p2 = vertices[faces[i][(j+2)%3]];
-		return std::acos((p1 - p0) DOT (p2 - p0));
+		return std::acos((p1 - p0) DOT (p2 - p0) / (len(p1 - p0) * len(p2 - p0)));
 	}
 
 	// Dihedral angle between face i and face across_edge[i][j]
