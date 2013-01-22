@@ -2,8 +2,7 @@
 
 A C++ adapted version of trimesh2 (branching from version 2.11)
 
-Please see original libraries at 
- http://gfx.cs.princeton.edu/proj/trimesh2/
+Please see original libraries at (http://gfx.cs.princeton.edu/proj/trimesh2/)
 
 ## ChangeLog
  * Fix a bug in XForm<T>::read()
