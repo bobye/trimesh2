@@ -6,7 +6,7 @@ WINDRES = i686-pc-mingw32-windres
 EXE = .exe
 
 ARCHOPTS = -m32 -march=core2 -mtune=native -mfpmath=sse
-ARCHOPTS += -fopenmp
+ARCHOPTS += #-fopenmp
 COPTS = -Wall -Wextra -Wno-parentheses -Wno-unused -Wno-sign-compare -Wno-unknown-pragmas
 
 ifdef DEBUG
@@ -30,7 +30,7 @@ CXXFLAGS = $(ARCHOPTS) $(INCLUDES) $(DEFINES) $(CXXOPTS)
 LDFLAGS = $(LIBDIR) $(LDOPTS)
 
 
-LIBS = -lm
+LIBS = -lm -static
 GLLIBS = -lgluit -lwinmm -lopengl32 -lglu32 -lgdi32
 CHOLMODLIBS = -lcholmod -lamd -lcolamd -lccolamd -lcamd -lmetis -llapack -lf77blas -lcblas -latlas -lg2c
 
