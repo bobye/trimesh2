@@ -99,6 +99,10 @@ public:
 	std::vector<vec> cornerareas;
 	std::vector<float> pointareas;
 
+	// added by @bobye
+	std::vector<std::vector<float> > edgelengths; 
+	std::vector<float>               faceareas;
+
 	// Bounding structures
 	box bbox;
 	BSphere bsphere;
@@ -138,6 +142,10 @@ public:
 	void need_neighbors();
 	void need_adjacentfaces();
 	void need_across_edge();
+
+	// added by bobye
+	void need_edgelengths();
+	void need_faceareas();
 
 	//
 	// Delete everything
