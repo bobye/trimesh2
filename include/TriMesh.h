@@ -144,6 +144,11 @@ public:
 	void need_across_edge();
 
 	// added by bobye
+	float * vertices_tightpacked;
+	float * normals_tightpacked;
+	void allocate_data_tightpacked();
+	void recompute_normals_tightpacked();
+
 	void need_edgelengths();
 	void need_faceareas();
 
