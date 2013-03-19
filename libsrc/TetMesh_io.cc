@@ -65,11 +65,12 @@ namespace trimesh {
       for (int j=0; j<3; ++j) {
 	fscanf(f, "%d", &idx);
 	if (mesh->nodes_on_surface[idx] == -1) {
-	  thisface[j] = count;
 	  mesh->nodes_on_surface[idx]=count++;
-	} else {
-	  thisface[j] = mesh->nodes_on_surface[idx];
+	  mesh->surface.vertices.push_back(mesh->nodes[idx]);
 	}
+
+	thisface[j] = mesh->nodes_on_surface[idx];
+
       }
 
       while (1) {int c = fgetc(f);if (c == EOF || c == '\n') break;}
@@ -77,9 +78,6 @@ namespace trimesh {
       mesh->surface.faces.push_back(thisface);
     }
     fclose(f);
-    mesh->surface.vertices.resize(count);
-    for (int i=0; i<count; ++i) 
-      mesh->surface.vertices[i] = mesh->nodes[i];
     
     
     return true;
