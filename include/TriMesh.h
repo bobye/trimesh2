@@ -154,14 +154,13 @@ public:
 
 	  vertices_tightpacked = new float[3*nv];
 	  face_indices_tightpacked = new unsigned int[3*fn];
-#pragma omp parallel for
+
 	  for (int i=0; i<nv; ++i) {
 	    vertices_tightpacked[3*i]   = vertices[i][0];
 	    vertices_tightpacked[3*i+1] = vertices[i][1];
 	    vertices_tightpacked[3*i+2] = vertices[i][2];
 	  }
 
-#pragma omp parallel for
 	  for (int i=0; i<fn; ++i) {
 	    face_indices_tightpacked[3*i]   = faces[i][0];
 	    face_indices_tightpacked[3*i+1] = faces[i][1];
