@@ -99,10 +99,6 @@ public:
 	std::vector<vec> cornerareas;
 	std::vector<float> pointareas;
 
-	// added by @bobye
-	std::vector<std::vector<float> > edgelengths; 
-	std::vector<float>               faceareas;
-
 	// Bounding structures
 	box bbox;
 	BSphere bsphere;
@@ -146,8 +142,39 @@ public:
 	// added by bobye
 	float * vertices_tightpacked;
 	float * normals_tightpacked;
-	void allocate_data_tightpacked();
 	void recompute_normals_tightpacked();
+
+	unsigned int *face_indices_tightpacked;
+
+	// allocate memory for tightly packed data
+	void allocate_data_tightpacked()
+	{
+	  int nv = vertices.size();
+	  int fn = faces.size();
+
+	  vertices_tightpacked = new float[3*nv];
+	  face_indices_tightpacked = new unsigned int[3*fn];
+#pragma omp parallel for
+	  for (int i=0; i<nv; ++i) {
+	    vertices_tightpacked[3*i]   = vertices[i][0];
+	    vertices_tightpacked[3*i+1] = vertices[i][1];
+	    vertices_tightpacked[3*i+2] = vertices[i][2];
+	  }
+
+#pragma omp parallel for
+	  for (int i=0; i<fn; ++i) {
+	    face_indices_tightpacked[3*i]   = faces[i][0];
+	    face_indices_tightpacked[3*i+1] = faces[i][1];
+	    face_indices_tightpacked[3*i+2] = faces[i][2];
+	  }
+
+	  normals_tightpacked  = (float*) malloc( 3*nv*sizeof(float));
+	  recompute_normals_tightpacked();
+	}
+
+	// added by @bobye
+	std::vector<std::vector<float> > edgelengths; 
+	std::vector<float>               faceareas;
 
 	void need_edgelengths();
 	void need_faceareas();

@@ -19,22 +19,6 @@ For raw point clouds, fits plane to k nearest neighbors.
 
 namespace trimesh {
 
-void TriMesh::allocate_data_tightpacked()
-// allocate memory for tightly packed data
-{
-  int nv = vertices.size();
-  vertices_tightpacked = new float[3*nv];
-
-#pragma omp parallel for
-  for (int i=0; i<nv; ++i) {
-    vertices_tightpacked[3*i]   = vertices[i][0];
-    vertices_tightpacked[3*i+1] = vertices[i][1];
-    vertices_tightpacked[3*i+2] = vertices[i][2];
-  }
-
-  normals_tightpacked  = (float*) malloc( 3*nv*sizeof(float));
-  recompute_normals_tightpacked();
-}
 
 void TriMesh::recompute_normals_tightpacked()
 // recompute normals and stored in tightly packed data
