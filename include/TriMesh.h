@@ -152,8 +152,8 @@ public:
 	  int nv = vertices.size();
 	  int fn = faces.size();
 
-	  vertices_tightpacked = new float[3*nv];
-	  face_indices_tightpacked = new unsigned int[3*fn];
+	  vertices_tightpacked = (float*) malloc(3*nv*sizeof(float));
+	  face_indices_tightpacked = (unsigned int*) malloc(3*fn*sizeof(unsigned int));
 
 	  for (int i=0; i<nv; ++i) {
 	    vertices_tightpacked[3*i]   = vertices[i][0];

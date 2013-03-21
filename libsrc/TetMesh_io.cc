@@ -49,6 +49,10 @@ namespace trimesh {
     fclose(f);
 
     // read .face
+    // note for tetrahedron mesh generated from triangle mesh by tetgen
+    //   ./tetgen -pq1.2Y test.off
+    // the surface nodes are in first inserted to nodes array, and then
+    // interior nodes are subsequently inserted thereafter.
     f = fopen(replace_ext(filename,"face").c_str(), "rb");
     if (!f) {
       eprintf("Error opening [%s] for reading: %s.\n", filename,
@@ -56,7 +60,7 @@ namespace trimesh {
       return false;    
     }
     fscanf(f, "%d %d", &n, &nothing);
-    mesh->nodes_on_surface.resize(mesh->nodes.size(), -1);
+    //mesh->nodes_on_surface.resize(mesh->nodes.size(), -1);
     int count=0, idx;
     for (int i=0; i<n; ++i) {
       fscanf(f, "%d", &nothing);
@@ -64,19 +68,25 @@ namespace trimesh {
 
       for (int j=0; j<3; ++j) {
 	fscanf(f, "%d", &idx);
+	/*
 	if (mesh->nodes_on_surface[idx] == -1) {
 	  mesh->nodes_on_surface[idx]=count++;
 	  mesh->surface.vertices.push_back(mesh->nodes[idx]);
 	}
 
 	thisface[j] = mesh->nodes_on_surface[idx];
-
+	*/
+	
+	if (idx+1 > count) count = idx +1;
+	thisface[j] = idx;
       }
 
       while (1) {int c = fgetc(f);if (c == EOF || c == '\n') break;}
-
+            
       mesh->surface.faces.push_back(thisface);
     }
+
+    mesh->surface.vertices = std::vector<point> (mesh->nodes.begin(), mesh->nodes.begin() + count);
     fclose(f);
     
     

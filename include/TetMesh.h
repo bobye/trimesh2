@@ -48,8 +48,22 @@ class TetMesh {
   std::vector<point> nodes;
   std::vector<Element> elements;
 
-  std::vector<int> nodes_on_surface; // Usage: surface.vertices[nodes_on_surface[i]]
+  // element/tetrahedron volume
+  std::vector<float> tetravolumes;
+
+  // facetarea[i][j]: the j-th facet of the i-th elements
+  std::vector< std::vector<float> > facetareas;
+
+  std::vector< std::vector<int> > neighbors;
+  // std::vector<int> nodes_on_surface; // Usage: surface.vertices[nodes_on_surface[i]]
   TriMesh surface;
+
+
+  void need_elements()
+  {
+    if (!elements.empty())
+      return;
+  }
 
   //
   // Input and Output
@@ -58,6 +72,11 @@ class TetMesh {
   static bool read_helper(const char *filename, TetMesh* mesh);
  public:
   static TetMesh *read(const char *filename);
+
+  void need_neighbors();
+
+  void need_tetravolumes();
+  void need_facetareas();
   
 };
 }

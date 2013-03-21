@@ -28,7 +28,9 @@ CCFILES =	TriMesh_bounding.cc \
 		reorder_verts.cc \
 		shared.cc \
 		subdiv.cc \
-		TetMesh_io.cc
+		TetMesh_io.cc \
+		TetMesh_metric.cc \
+		TetMesh_connectivity.cc
 
 
 OFILES = $(addprefix $(OBJDIR)/,$(CCFILES:.cc=.o))
