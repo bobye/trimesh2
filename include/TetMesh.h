@@ -55,6 +55,7 @@ class TetMesh {
   std::vector< std::vector<float> > facetareas;
 
   std::vector< std::vector<int> > neighbors;
+  std::vector< std::vector<int> > adjacentelements;
   // std::vector<int> nodes_on_surface; // Usage: surface.vertices[nodes_on_surface[i]]
   TriMesh surface;
 
@@ -74,10 +75,10 @@ class TetMesh {
   static TetMesh *read(const char *filename);
 
   void need_neighbors();
-
+  void need_adjacentelements();
   void need_tetravolumes();
   void need_facetareas();
-  
+
 };
 }
 

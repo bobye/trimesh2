@@ -47,4 +47,35 @@ void TetMesh::need_neighbors()
 	dprintf("Done.\n");
 }
 
+// Find the faces touching each vertex
+void TetMesh::need_adjacentelements()
+{
+	if (!adjacentelements.empty())
+		return;
+
+	need_elements();
+
+	dprintf("Finding vertex to triangle maps... ");
+	int nn = nodes.size(), ne = elements.size();
+
+	std::vector<int> numadjacentelements(nn);
+	for (int i = 0; i < ne; i++) {
+		numadjacentelements[elements[i][0]]++;
+		numadjacentelements[elements[i][1]]++;
+		numadjacentelements[elements[i][2]]++;
+	}
+
+	adjacentelements.resize(nodes.size());
+	for (int i = 0; i < nn; i++)
+	  adjacentelements[i].reserve(numadjacentelements[i]);
+	
+	for (int i = 0; i < ne; i++) {
+	  for (int j = 0; j < 4; j++)
+	    adjacentelements[elements[i][j]].push_back(i);
+	}
+
+	dprintf("Done.\n");
+}
+
+
 }
