@@ -50,9 +50,11 @@ class TetMesh {
 
   // element/tetrahedron volume
   std::vector<float> tetravolumes;
-
+  std::vector<float> pointvolumes;
   // facetarea[i][j]: the j-th facet of the i-th elements
   std::vector< std::vector<float> > facetareas;
+
+
 
   std::vector< std::vector<int> > neighbors;
   std::vector< std::vector<int> > adjacentelements;
@@ -60,11 +62,12 @@ class TetMesh {
   TriMesh surface;
 
 
-  void need_elements()
-  {
-    if (!elements.empty())
-      return;
-  }
+
+  void need_neighbors();
+  void need_adjacentelements();
+  void need_tetravolumes();
+  void need_pointvolumes();
+  void need_facetareas();
 
   //
   // Input and Output
@@ -74,10 +77,30 @@ class TetMesh {
  public:
   static TetMesh *read(const char *filename);
 
-  void need_neighbors();
-  void need_adjacentelements();
-  void need_tetravolumes();
-  void need_facetareas();
+  void need_elements()
+  {
+    if (!elements.empty())
+      return;
+  }
+
+  float dihedral(int i, int a, int b) {// element i
+    int c=0, d, ia,ib,ic,id;
+    bool k[4];
+    k[a] = k[b] = true;
+    while (k[c]) ++c;
+    d = c+1;
+    while (k[d]) ++d;    
+
+    ia = elements[i][a];
+    ib = elements[i][b];
+    ic = elements[i][c];
+    id = elements[i][d];
+
+    vec n_acd = (nodes[ia] - nodes[ic]) CROSS (nodes[ia] - nodes[id]); normalize(n_acd);
+    vec n_bcd = (nodes[ib] - nodes[id]) CROSS (nodes[ib] - nodes[id]); normalize(n_bcd);
+
+    return std::acos(n_acd DOT n_bcd);
+  }
 
 };
 }

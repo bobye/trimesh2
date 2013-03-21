@@ -18,6 +18,24 @@ namespace trimesh {
     }
   }
 
+  void TetMesh::need_pointvolumes() //naive averge of neighbor tetrahedron
+  {
+    need_tetravolumes();
+    need_adjacentelements();
+
+    int nn = nodes.size();
+
+    if (nn == pointvolumes.size()) return;
+    else pointvolumes.resize(nn, 0);
+
+#pragma omp parallel for
+    for (int i = 0; i< nn; ++i) {
+      for (int j=0; j<adjacentelements[i].size(); ++j) {
+	pointvolumes[i] += tetravolumes[adjacentelements[i][j]]/4.;
+      }
+    }    
+  }
+
   void TetMesh::need_facetareas()
   {
     int en = elements.size();

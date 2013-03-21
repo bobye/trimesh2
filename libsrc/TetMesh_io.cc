@@ -82,6 +82,9 @@ namespace trimesh {
       }
 
       while (1) {int c = fgetc(f);if (c == EOF || c == '\n') break;}
+
+      //face flip
+      std::swap(thisface[0], thisface[2]);
             
       mesh->surface.faces.push_back(thisface);
     }
