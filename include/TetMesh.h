@@ -69,6 +69,9 @@ class TetMesh {
   void need_pointvolumes();
   void need_facetareas();
 
+
+  bool write(const char *filename);
+
   //
   // Input and Output
   //

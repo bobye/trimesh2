@@ -13,7 +13,7 @@ namespace trimesh {
 #define dprintf TriMesh::dprintf
 #define eprintf TriMesh::eprintf
 
-  bool read_default(const char* filename, TetMesh* mesh) {
+  bool read_tetgen(const char* filename, TetMesh* mesh) {
     int n, nothing;
 
     // read .node
@@ -96,6 +96,53 @@ namespace trimesh {
     return true;
   }
 
+  bool write_tetgen(TetMesh* mesh, const char* filename) {
+    FILE *f = NULL;
+
+    // write .node
+    if (strcmp(filename, "-") == 0) {
+      f = stdout;
+      filename = "standard output";
+    } else {
+      f = fopen(filename, "wb");
+      if (!f) {
+	eprintf("Error opening [%s] for writing: %s.\n", filename,
+		strerror(errno));
+	return false;
+      }
+    }
+
+
+    fprintf(f,"%4d   3   0   0\n", (int) mesh->nodes.size());
+    for (int i = 0; i<mesh->nodes.size(); ++i) {
+      fprintf(f,"%4d    %.10f    %.10f    %.10f\n", i, 
+	      mesh->nodes[i][0], mesh->nodes[i][0], mesh->nodes[i][0]);
+    }
+
+    fclose(f);
+    
+    // write .ele
+    f = fopen(replace_ext(filename, "ele").c_str(), "wb");
+    fprintf(f,"%4d    4    0\n", (int) mesh->elements.size());
+    for (int i = 0; i<mesh->elements.size(); ++i) {
+      fprintf(f, "%4d    %4d    %4d    %4d    %4d\n", i, 
+	   mesh->elements[i][0], mesh->elements[i][1], mesh->elements[i][2], mesh->elements[i][3]);
+    }
+    fclose(f);
+
+    // write .face
+    f = fopen(replace_ext(filename, "face").c_str(), "wb");
+    fprintf(f,"%4d    0\n", (int) mesh->surface.faces.size());
+    for (int i = 0; i<mesh->surface.faces.size(); ++i) {
+      // remember face flip
+      fprintf(f, "%4d    %4d    %4d    %4d\n", i,
+	      mesh->surface.faces[i][2], mesh->surface.faces[i][1], mesh->surface.faces[i][0]);
+    }
+    fclose(f);
+
+    return true;
+  }
+
 
   TetMesh *TetMesh::read(const char* filename)
   {
@@ -112,11 +159,11 @@ namespace trimesh {
     bool ok = false;
 
     
-    // Read tetgen generated format by default
+    // Read tetgen generated format 
 
     // read example.1.node
     if (ends_with(filename, ".node")) {
-      ok = read_default(filename, mesh);
+      ok = read_tetgen(filename, mesh);
       goto out;
     }
 
@@ -132,4 +179,44 @@ out:
 
 
   }
+
+  bool TetMesh::write(const char *filename) {
+    if (!filename || *filename == '\0') {
+      eprintf("Can't write to empty filename.\n");
+      return false;
+    }
+
+    if (nodes.empty()) {
+      eprintf("Empty mesh - nothing to write.\n");
+      return false;
+    }
+
+    enum { TETGEN } filetype;
+
+    
+    if (ends_with(filename, ".node"))
+      filetype = TETGEN;
+
+
+    dprintf("Writing %s... ", filename);
+
+    bool ok = false;
+    switch (filetype) {
+    case TETGEN:
+      ok = write_tetgen(this, filename);
+      break;
+    default:
+      break;
+    }
+
+    if (!ok) {
+      eprintf("Error writing file [%s].\n", filename);
+      return false;
+    }
+
+    dprintf("Done.\n");
+    return true;
+
+  }
+  
 }
