@@ -38,7 +38,7 @@ static bool read_3ds(FILE *f, TriMesh *mesh);
 static bool read_vvd(FILE *f, TriMesh *mesh);
 static bool read_ray(FILE *f, TriMesh *mesh);
 static bool read_obj(FILE *f, TriMesh *mesh);
-static bool read_off(FILE *f, TriMesh *mesh);
+static bool read_off(FILE *f, TriMesh *mesh, bool iscolor = false);
 static bool read_sm( FILE *f, TriMesh *mesh);
 static bool read_stl( FILE *f, TriMesh *mesh);
 
@@ -303,6 +303,15 @@ bool TriMesh::read_helper(const char *filename, TriMesh *mesh)
 		}
 		if (strncmp(buf, "FF", 2) == 0)
 			ok = read_off(f, mesh);
+	} else if (c == 'C') {
+	        // Assume an COFF file
+       	        char buf[4];
+		if (!fgets(buf,4,f)) {
+		        eprintf("Can't read header.\n");
+		        goto out;
+		    }
+		if (strncmp(buf, "OFF", 3) == 0)
+		        ok = read_off(f,mesh,true);
 	} else if (isdigit(c)) {
 		// Assume an old-style sm file
 		ungetc(c, f);
@@ -776,16 +785,22 @@ static bool read_obj(FILE *f, TriMesh *mesh)
 
 
 // Read an off file
-static bool read_off(FILE *f, TriMesh *mesh)
+static bool read_off(FILE *f, TriMesh *mesh, bool iscolor)
 {
 	skip_comments(f);
-	char buf[1024];
+	char buf[1024]; 
 	GET_LINE();
 	int nverts, nfaces, unused;
 	if (sscanf(buf, "%d %d %d", &nverts, &nfaces, &unused) < 2)
 		return false;
-	if (!read_verts_asc(f, mesh, nverts, 3, 0, -1, -1, false, -1))
-		return false;
+
+	if (iscolor) {
+	  if (!read_verts_asc(f, mesh, nverts, 7, 0, -1, 3, true, -1))
+	    return false;
+	} else {
+	  if (!read_verts_asc(f, mesh, nverts, 3, 0, -1, -1, false, -1))
+	    return false;
+	}
 	if (!read_faces_asc(f, mesh, nfaces, 1, 0, 1, true))
 		return false;
 
