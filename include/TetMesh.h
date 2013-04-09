@@ -58,7 +58,6 @@ class TetMesh {
 
   std::vector< std::vector<int> > neighbors;
   std::vector< std::vector<int> > adjacentelements;
-  // std::vector<int> nodes_on_surface; // Usage: surface.vertices[nodes_on_surface[i]]
   TriMesh surface;
 
 

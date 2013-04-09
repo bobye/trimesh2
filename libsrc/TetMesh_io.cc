@@ -17,6 +17,9 @@ namespace trimesh {
     int n, nothing;
 
     // read .node
+    std::vector<point> nodes_cpy;
+    std::vector<TetMesh::Element> elements_cpy;
+
     FILE* f = fopen(filename, "rb");
     if (!f) {
       eprintf("Error opening [%s] for reading: %s.\n", filename,
@@ -25,10 +28,11 @@ namespace trimesh {
     }
     
     fscanf(f, "%d %d %d %d",  &n, &nothing, &nothing, &nothing);
+    dprintf("#nodes: %d\t", n);
     for (int i=0; i<n; ++i) {
       point p;
       fscanf(f, "%d %f %f %f", &nothing, &p[0], &p[1], &p[2]);
-      mesh->nodes.push_back(p);
+      nodes_cpy.push_back(p);
     }
     fclose(f);
 
@@ -41,10 +45,11 @@ namespace trimesh {
     }
     
     fscanf(f, "%d %d %d", &n, &nothing, &nothing);
+    dprintf("#elements: %d\t",n);
     for (int i=0; i<n; ++i) {
       TetMesh::Element e;
       fscanf(f, "%d %d %d %d %d", &nothing, &e[0], &e[1], &e[2], &e[3]);
-      mesh->elements.push_back(e);
+      elements_cpy.push_back(e);
     }
     fclose(f);
 
@@ -60,7 +65,8 @@ namespace trimesh {
       return false;    
     }
     fscanf(f, "%d %d", &n, &nothing);
-    //mesh->nodes_on_surface.resize(mesh->nodes.size(), -1);
+    dprintf("#faces: %d\n",n);
+    std::vector<int> nodes_on_surface(nodes_cpy.size(), -1);
     int count=0, idx;
     for (int i=0; i<n; ++i) {
       fscanf(f, "%d", &nothing);
@@ -68,17 +74,18 @@ namespace trimesh {
 
       for (int j=0; j<3; ++j) {
 	fscanf(f, "%d", &idx);
-	/*
-	if (mesh->nodes_on_surface[idx] == -1) {
-	  mesh->nodes_on_surface[idx]=count++;
-	  mesh->surface.vertices.push_back(mesh->nodes[idx]);
+
+	if (nodes_on_surface[idx] == -1) {
+	  nodes_on_surface[idx]=count++;
+	  mesh->surface.vertices.push_back(nodes_cpy[idx]);
 	}
 
-	thisface[j] = mesh->nodes_on_surface[idx];
+	thisface[j] = nodes_on_surface[idx];
+
+	/*	
+		if (idx+1 > count) count = idx +1;
+		thisface[j] = idx;
 	*/
-	
-	if (idx+1 > count) count = idx +1;
-	thisface[j] = idx;
       }
 
       while (1) {int c = fgetc(f);if (c == EOF || c == '\n') break;}
@@ -88,11 +95,31 @@ namespace trimesh {
             
       mesh->surface.faces.push_back(thisface);
     }
+    dprintf("#nodes on boundary surface: %d\n", count);
+    
+    for (int i=0; i<nodes_cpy.size(); ++i)
+      if (nodes_on_surface[i] == -1) nodes_on_surface[i] = count ++;
 
-    mesh->surface.vertices = std::vector<point> (mesh->nodes.begin(), mesh->nodes.begin() + count);
+    mesh->nodes.resize(nodes_cpy.size());
+    for (int i=0; i<nodes_cpy.size(); ++i)
+      mesh->nodes[nodes_on_surface[i]] = nodes_cpy[i];
+
+    mesh->elements.resize(elements_cpy.size());
+    for (int i=0; i<elements_cpy.size(); ++i) {
+      mesh->elements[i][0] = nodes_on_surface[elements_cpy[i][0]];
+      mesh->elements[i][1] = nodes_on_surface[elements_cpy[i][1]];
+      mesh->elements[i][2] = nodes_on_surface[elements_cpy[i][2]];
+      mesh->elements[i][3] = nodes_on_surface[elements_cpy[i][3]];
+    }
+    //    mesh->surface.vertices = std::vector<point> (mesh->nodes.begin(), mesh->nodes.begin() + count);
+
     fclose(f);
     
-    
+    f = fopen("default_remap.txt","wb");
+    for (int i=0; i<nodes_cpy.size(); ++i) 
+      fprintf(f, "%d\n", nodes_on_surface[i]);
+    fclose(f);
+
     return true;
   }
 
@@ -116,7 +143,7 @@ namespace trimesh {
     fprintf(f,"%4d   3   0   0\n", (int) mesh->nodes.size());
     for (int i = 0; i<mesh->nodes.size(); ++i) {
       fprintf(f,"%4d    %.10f    %.10f    %.10f\n", i, 
-	      mesh->nodes[i][0], mesh->nodes[i][0], mesh->nodes[i][0]);
+	      mesh->nodes[i][0], mesh->nodes[i][1], mesh->nodes[i][2]);
     }
 
     fclose(f);
