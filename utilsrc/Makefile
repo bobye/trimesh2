@@ -18,7 +18,8 @@ OTHERSOURCES =	mesh_align.cc \
 		mesh_info.cc \
 		mesh_make.cc \
 		mesh_shade.cc \
-		xf.cc
+		xf.cc \
+		tetmesh_info.cc
 
 VIEWOFILES = $(addprefix $(OBJDIR)/,$(VIEWSOURCES:.cc=.o))
 OTHEROFILES = $(addprefix $(OBJDIR)/,$(OTHERSOURCES:.cc=.o))

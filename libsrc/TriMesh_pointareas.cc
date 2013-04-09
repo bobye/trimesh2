@@ -78,4 +78,33 @@ void TriMesh::need_pointareas()
 	dprintf("Done.\n");
 }
 
+  void TriMesh::need_edgelengths(){
+    if (!edgelengths.empty())
+      return;
+
+    int nf = faces.size(); int nv = vertices.size();
+    
+    edgelengths.resize(nf, std::vector<float>(3));
+
+#pragma omp parallel for
+    for (int i=0; i<nf; ++i)
+      for (int j=0; j<3; ++j) {
+	edgelengths[i][j] = len(vertices[faces[i][(j+1)%3]] - vertices[faces[i][(j+2)%3]]);
+      }
+  }
+
+  void TriMesh::need_faceareas(){
+    if (faceareas.size() == faces.size()) 
+      return;
+    int nf = faces.size();
+    faceareas.resize(nf);
+
+#pragma omp parallel for
+    for (int i=0; i<nf; ++i) {
+      vec e[2] = { vertices[faces[i][2]] - vertices[faces[i][1]],
+		   vertices[faces[i][0]] - vertices[faces[i][2]] };
+      faceareas[i] = .5f * len(e[0] CROSS e[1]);
+    }
+  }
+
 } // end namespace trimesh
