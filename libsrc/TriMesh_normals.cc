@@ -24,12 +24,13 @@ void TriMesh::recompute_normals_tightpacked()
 // recompute normals and stored in tightly packed data
 {
 	// Nothing to do if we already have normals
+	need_faces();
 	int nv = vertices.size();
 
-	dprintf("Recomputing normals... ");
+	//dprintf("Recomputing normals... ");
+#pragma omp parallel for
 	for (int i=0; i< 3*nv; ++i) normals_tightpacked[i] = 0.f;
 	// TODO: direct handling of grids
-	need_faces();
 	{
 		// Compute from faces
 		int nf = faces.size();
@@ -73,7 +74,7 @@ void TriMesh::recompute_normals_tightpacked()
 	  normals_tightpacked[i+1] /=n;
 	  normals_tightpacked[i+2] /=n;
 	}
-	dprintf("Done.\n");
+	//	dprintf("Done.\n");
 }
 // Compute per-vertex normals
 void TriMesh::need_normals()
