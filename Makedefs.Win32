@@ -30,7 +30,7 @@ CXXFLAGS = $(ARCHOPTS) $(INCLUDES) $(DEFINES) $(CXXOPTS)
 LDFLAGS = $(LIBDIR) $(LDOPTS)
 
 
-LIBS = -lm -static
+LIBS = -lm -static-libgcc -static-libstdc++
 GLLIBS = -lgluit -lwinmm -lopengl32 -lglu32 -lgdi32
 CHOLMODLIBS = -lcholmod -lamd -lcolamd -lccolamd -lcamd -lmetis -llapack -lf77blas -lcblas -latlas -lg2c
 
