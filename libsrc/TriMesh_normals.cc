@@ -47,11 +47,27 @@ void TriMesh::recompute_normals_tightpacked()
 		  float b[3] = {p1[0] - p2[0], p1[1] - p2[1], p1[2] - p2[2]};
 		  float c[3] = {p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2]};
 				    
-		  float l2a = std::sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]), l2b = std::sqrt(b[0]*b[0] + b[1]*b[1] + b[2]*b[2]), l2c = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
+		  float
+		    l2a = std::sqrt(a[0]*a[0] + a[1]*a[1] + a[2]*a[2]), 
+		    l2b = std::sqrt(b[0]*b[0] + b[1]*b[1] + b[2]*b[2]), 
+		    l2c = std::sqrt(c[0]*c[0] + c[1]*c[1] + c[2]*c[2]);
 		  
 		  if (!l2a || !l2b || !l2c)
 		    continue;
-		  float facenormal[3] = {a[1]*b[2] - a[2]*b[1], a[2]*b[0] - a[0]*b[2], a[0]*b[1] - a[1]*b[0]};
+		  float facenormal[3] = 
+		    {a[1]*b[2] - a[2]*b[1], 
+		     a[2]*b[0] - a[0]*b[2], 
+		     a[0]*b[1] - a[1]*b[0]};
+
+#if 1		  
+		  float nfn = std::sqrt(facenormal[0]*facenormal[0] 
+					+ facenormal[1]*facenormal[1]
+					+ facenormal[2]*facenormal[2]);
+		  
+		  facenormals_tightpacked[3*i  ] = facenormal[0]/nfn;
+		  facenormals_tightpacked[3*i+1] = facenormal[1]/nfn;
+		  facenormals_tightpacked[3*i+2] = facenormal[2]/nfn;
+#endif
 		  normals_tightpacked[i0    ] += facenormal[0] * (1.0f / (l2a * l2c));
 		  normals_tightpacked[i0 + 1] += facenormal[1] * (1.0f / (l2a * l2c));
 		  normals_tightpacked[i0 + 2] += facenormal[2] * (1.0f / (l2a * l2c));

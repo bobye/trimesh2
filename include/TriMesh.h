@@ -142,6 +142,8 @@ public:
 	// added by bobye
 	float * vertices_tightpacked;
 	float * normals_tightpacked;
+	float * facenormals_tightpacked;
+
 	void recompute_normals_tightpacked();
 
 	unsigned int *face_indices_tightpacked;
@@ -168,6 +170,7 @@ public:
 	  }
 
 	  normals_tightpacked  = (float*) malloc( 3*nv*sizeof(float));
+	  facenormals_tightpacked = (float*) malloc (3*fn*sizeof(float));
 	  recompute_normals_tightpacked();
 	}
 
